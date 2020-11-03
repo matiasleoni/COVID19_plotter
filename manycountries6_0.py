@@ -1,3 +1,12 @@
+'''
+This script allows you to INPUT countries of interest, data of interest, starting date and
+an integer smoothing parameter in order to plot the time series for the given type of data
+and country set using matplotlib module and parsing the information provided in the dataset
+collected by "Our World in Data" organization. Credits for the dataset goes to:
+Hasell, J., Mathieu, E., Beltekian, D. et al. A cross-country database of COVID-19 testing.
+Sci Data 7, 345 (2020). https://doi.org/10.1038/s41597-020-00688-8
+'''
+
 import csv
 import requests
 import datetime
@@ -5,22 +14,10 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import PIL.Image as pili
+import data as dt
 
 
-WEB = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
-FILE = 'owid-covid-data.csv'
 
-COLUMNS = ['iso_code', 'continent', 'location', 'date',
-           'total_cases', 'new_cases', 'new_cases_smoothed', 'total_deaths',
-           'new_deaths', 'new_deaths_smoothed', 'total_cases_per_million', 'new_cases_per_million',
-           'new_cases_smoothed_per_million', 'total_deaths_per_million', 'new_deaths_per_million',
-           'new_deaths_smoothed_per_million', 'total_tests', 'new_tests', 'total_tests_per_thousand',
-           'new_tests_per_thousand', 'new_tests_smoothed', 'new_tests_smoothed_per_thousand',
-           'tests_per_case', 'positive_rate', 'tests_units', 'stringency_index', 'population',
-           'population_density', 'median_age', 'aged_65_older', 'aged_70_older', 'gdp_per_capita',
-           'extreme_poverty', 'cardiovasc_death_rate', 'diabetes_prevalence', 'female_smokers',
-           'male_smokers', 'handwashing_facilities', 'hospital_beds_per_thousand', 'life_expectancy',
-           'human_development_index']
 
 
 
@@ -73,14 +70,14 @@ def parser_local(countries):
     """
     INPUT: List of Country Names in English
     OUTPUT: A dictionary of dictionaries. The key value of the outer dictionary is a tuple (date, 'country').
-    The inner dictionary has keys from COLUMNS (see at beggining) and their respective values.
+    The inner dictionary has keys from dt.COLUMNS and their respective values.
     """
     num_of_countries = len(countries)
     tot_entries = ((datetime.date.today()-datetime.date(2019, 12, 31)).days+1)*num_of_countries
     print('')
     print('At most a total of',tot_entries,'entries expected.')
     
-    with open(FILE, 'rt', newline = "", encoding='utf-8-sig') as myfile:
+    with open(dt.FILE, 'rt', newline = "", encoding='utf-8-sig') as myfile:
         csvreader = csv.reader(myfile,skipinitialspace = True,
                            delimiter = ',', quoting = csv.QUOTE_MINIMAL)
         ntable = []
@@ -94,7 +91,7 @@ def parser_local(countries):
         #print('')
         print(num,'entries found for selected countries ... OK')
         print('')
-        ncolumn = COLUMNS
+        ncolumn = dt.COLUMNS
         mydic = {}
         for element in ntable:
             mydic[(element[2],element[3])] = {ncolumn[index]: element[index] for index in range(len(ncolumn))}
@@ -148,8 +145,8 @@ def draw_many_lines(countries, data_type, deep=7, init_date='2019-12-31', output
     RETURN: None
     """
     plt.style.use('seaborn-notebook')
-    if os.path.exists(FILE):
-        statbuf = datetime.datetime.fromtimestamp((os.stat(FILE)).st_mtime)
+    if os.path.exists(dt.FILE):
+        statbuf = datetime.datetime.fromtimestamp((os.stat(dt.FILE)).st_mtime)
         print('')
         print('=============================================================')
         print('')
@@ -159,20 +156,20 @@ def draw_many_lines(countries, data_type, deep=7, init_date='2019-12-31', output
         if fresh_or_not == 'y':
             print('')
             print('Downloading fresh data from "Our World in Data" ...', end='')
-            my_web = requests.get(WEB, allow_redirects=True)
+            my_web = requests.get(dt.WEB, allow_redirects=True)
             with open('owid-covid-data.csv', 'wb') as newdatafile:
                 newdatafile.write(my_web.content)
-    elif not os.path.exists(FILE):
+    elif not os.path.exists(dt.FILE):
         print('')
         print('Downloading fresh data from "Our World in Data" ...', end='')
-        my_web = requests.get(WEB, allow_redirects=True)
+        my_web = requests.get(dt.WEB, allow_redirects=True)
         with open('owid-covid-data.csv', 'wb') as newdatafile:
             newdatafile.write(my_web.content)        
     print('OK')
     mydic = parser_local(countries)
     for pais in countries:
         print('Processing data for',pais,'... ', end='')
-        if data_type in COLUMNS:
+        if data_type in dt.COLUMNS:
             mytable = order_for_plot(mydic, pais, init_date, data_type, deep)
         else:
             print('')
@@ -225,21 +222,26 @@ def input_output_execution():
     print('Hasell, J., Mathieu, E., Beltekian, D. et al. A cross-country database of COVID-19 testing.')
     print('Sci Data 7, 345 (2020). https://doi.org/10.1038/s41597-020-00688-8')
     print('======================================================================================================')
+    
     ### INPUT Country names in English
-    more = True
     country_list = []
-    country = input('Input country name in english (e.g. United States): ')
-    country_list.append(country.title())
-    while more:
+    while True:
         print()
-        print('Input another country name in english (e.g. Argentina).')
+        print('Input country name in english (e.g. Argentina).')
         country = input('If no more countries are needed just press ENTER: ')
-        if country != '':
+        if country == '' and len(country_list) > 0:
+            break
+        elif country == '' and len(country_list) == 0:
+            print()
+            print('At least one country name is needed')
+        elif country.title() not in dt.COUNTRIES:
+            print()
+            print(country, 'is non-existent. Check your spelling')
+        elif country.title() in dt.COUNTRIES:
             country_list.append(country.title())
-        else:
-            more = False
     print('')
     print('Your set of country choices is:     ', country_list)
+    
     ### Present data types
     print()
     print('=====================================================================')
@@ -253,12 +255,13 @@ def input_output_execution():
     print("tests_per_case, positive_rate, tests_units, stringency_index")
     print('----------------------------------------------------------------------')
     print()
+    
     ### INPUT Data types
     more = True
     while more:
         print('Please choose a data type from the previous list.')
         data_type = input('Write it literally as in the list (e.g. new_cases): ')
-        if data_type in COLUMNS:
+        if data_type in dt.COLUMNS:
             more = False
         else:
             print('')
@@ -266,6 +269,7 @@ def input_output_execution():
             print('')        
     print()
     print()
+    
     ### INPUT integer number corresponding to the number of days for the moving average
     while True:
         try:
@@ -282,6 +286,7 @@ def input_output_execution():
             print('')            
     print()
     print()
+    
     ### INPUT the desired starting date
     while True:
         try:
@@ -298,6 +303,7 @@ def input_output_execution():
             print('')
     print()
     print()
+    
     ### INPUT the name of the file to render the plot
     print('Input the file name for the output (e.g: grafico.png).')
     outputfile = input('Press ENTER to show the plot without saving it: ')
@@ -305,6 +311,15 @@ def input_output_execution():
         outputfile = 0
     ### EXECUTE
     draw_many_lines(country_list, data_type, deep_avg, init_date, outputfile)
-    
-input_output_execution()
+
+while True:
+    execute = input('Do you want to execute the program interactively? (y/n): ')
+    if execute == 'y':
+        input_output_execution()
+        del(execute)
+        break
+    elif execute == 'n':
+        del(execute)
+        break
+
 
