@@ -64,6 +64,7 @@ You only need the files
 1. Covid19Plotter.py
 2. data.py
 3. requirements.txt
+
 from this repository. Create a folder (let us call it Covid19plotter) in your system and place those files in it.
 
 #### 2. Create a virtual environment
