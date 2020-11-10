@@ -250,12 +250,14 @@ def input_output_execution():
     print('=====================================================================')
     print()
     print()
+    data_type_list = dt.data_list
+    data_type_obj = dt.numbered_dic(data_type_list)
+    data_type_dic = data_type_obj.alist
+    
     print('LIST OF DATA TYPES')
     print('----------------------------------------------------------------------')
-    print("total_cases, new_cases, total_deaths, new_deaths, total_cases_per_million")
-    print("new_cases_per_million, total_deaths_per_million, new_deaths_per_million")
-    print("total_tests, new_tests, total_tests_per_thousand, new_tests_per_thousand")
-    print("tests_per_case, positive_rate, tests_units, stringency_index")
+    data_type_obj.printdic()
+    print()
     print('----------------------------------------------------------------------')
     print()
     
@@ -263,13 +265,17 @@ def input_output_execution():
     more = True
     while more:
         print('Please choose a data type from the previous list.')
-        data_type = input('Write it literally as in the list (e.g. new_cases): ')
-        if data_type in dt.COLUMNS:
+        try:
+            data_type = data_type_dic[int(input('For example, press 2 for new_cases: '))]
             more = False
-        else:
+        except ValueError:
             print('')
-            print('Check your spelling. Try again')
-            print('')        
+            print('Not an integer number. Try again')
+            print('')
+        except KeyError:
+            print('')
+            print('Your number is out of range. Try again')
+            print('')
     print()
     print()
     

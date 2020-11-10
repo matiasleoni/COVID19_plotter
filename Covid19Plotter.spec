@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['Covid19Plotter.py'],
-             pathex=['C:\\Users\\Acer\\Dropbox\\Coursera\\botProject\\ExecutableCovidPlotter'],
+             pathex=['C:\\Users\\Acer\\Dropbox\\Scripts\\COVID19_plotter'],
              binaries=[],
              datas=[],
              hiddenimports=[],
