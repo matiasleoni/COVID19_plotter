@@ -54,7 +54,7 @@
  [],
  False,
  False,
- 1605038958,
+ 1605102862,
  [('run.exe',
    'c:\\users\\acer\\dropbox\\coursera\\botproject\\executablecovidplotter\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\run.exe',
    'EXECUTABLE')])

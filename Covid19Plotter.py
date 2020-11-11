@@ -150,7 +150,7 @@ def draw_many_lines(countries, data_type, deep=7, init_date='2019-12-31', output
     if os.path.exists(dt.FILE):
         statbuf = datetime.datetime.fromtimestamp((os.stat(dt.FILE)).st_mtime)
         print('')
-        print('=============================================================')
+        print('=====================================================================')
         print('')
         print("LAST DOWNLOAD OF DATA: {}".format(statbuf))
         print('')
@@ -215,6 +215,7 @@ def input_output_execution():
     OUTPUT: after executing input questions to the user ir executes draw_many_lines function with the proper arguments
     '''
     ### GENERAL INFORMATION
+    os.system('cls')
     print('======================================================================================================')
     print('')
     print('                                  PLOT COVID-19 DATA                                                  ')
@@ -231,19 +232,41 @@ def input_output_execution():
     while True:
         print()
         print('Input country name in english (e.g. Argentina).')
+        print("If you would like to see a country list to check your spelling press '?'")
         country = input('If no more countries are needed just press ENTER: ')
         if country == '' and len(country_list) > 0:
             break
         elif country == '' and len(country_list) == 0:
+            os.system('cls')
             print()
             print('At least one country name is needed')
-        elif country.title() not in dt.COUNTRIES:
+        elif country == '?':
+            os.system('cls')
             print()
+            if len(country_list) > 0:
+                print('Your set of country choices is:     ',end='')
+                print(*country_list, sep=', ')
+                print('')
+            print(*sorted(list(dt.COUNTRIES)), sep=', ')
+        elif country.title() not in dt.COUNTRIES:
+            os.system('cls')
+            print()
+            if len(country_list) > 0:
+                print('Your set of country choices is:     ',end='')
+                print(*country_list, sep=', ')
+                print('')
             print(country, 'is non-existent. Check your spelling')
         elif country.title() in dt.COUNTRIES:
             country_list.append(country.title())
+            country_list = list(set(country_list))
+            os.system('cls')
+            print('')
+            print('Your set of country choices is:     ',end='')
+            print(*country_list, sep=', ')
+    os.system('cls')
     print('')
-    print('Your set of country choices is:     ', country_list)
+    print('Your set of country choices is:     ',end='')
+    print(*country_list, sep=', ')
     
     ### Present data types
     print()
@@ -278,6 +301,14 @@ def input_output_execution():
             print('')
     print()
     print()
+    os.system('cls')
+    print('')
+    print('Your set of country choices is:     ',end='')
+    print(*country_list, sep=', ')
+    print('')
+    print('Your choice of data type to plot:   ', parse_title(data_type))
+    print('=====================================================================')
+    print('')
     
     ### INPUT integer number corresponding to the number of days for the moving average
     while True:
@@ -295,6 +326,17 @@ def input_output_execution():
             print('')            
     print()
     print()
+    os.system('cls')
+    print('')
+    print('Your set of country choices is:     ',end='')
+    print(*country_list, sep=', ')
+    print('')
+    print('Your choice of data type to plot:   ', parse_title(data_type))
+    print('')
+    if deep_avg > 1:
+        print('You decided to plot using a', deep_avg,'days moving average ')
+    print('=====================================================================')
+    print('')
     
     ### INPUT the desired starting date
     while True:
@@ -312,12 +354,40 @@ def input_output_execution():
             print('')
     print()
     print()
-    
+    os.system('cls')
+    print('')
+    print('Your set of country choices is:     ',end='')
+    print(*country_list, sep=', ')
+    print('')
+    print('Your choice of data type to plot:   ', parse_title(data_type))
+    print('')
+    if deep_avg > 1:
+        print('You decided to plot using a', deep_avg,'days moving average ')
+        print('')
+    print('You will plot data starting on', init_date)
+    print('=====================================================================')
+    print('')
     ### INPUT the name of the file to render the plot
     print('Input the file name for the output (e.g: grafico.png).')
     outputfile = input('Press ENTER to show the plot without saving it: ')
     if outputfile == '':
         outputfile = 0
+    os.system('cls')
+    print('')
+    print('Your set of country choices is:     ',end='')
+    print(*country_list, sep=', ')
+    print('')
+    print('Your choice of data type to plot:   ', parse_title(data_type))
+    print('')
+    if deep_avg > 1:
+        print('You decided to plot using a', deep_avg,'days moving average ')
+        print('')
+    print('You will plot data starting on', init_date)
+    print('')
+    if outputfile == 0:
+        print('The plot will be shown in a new window and will not be saved')
+    else:
+        print('The plot will be saved to the file:   ', outputfile)
     ### EXECUTE
     draw_many_lines(country_list, data_type, deep_avg, init_date, outputfile)
 
