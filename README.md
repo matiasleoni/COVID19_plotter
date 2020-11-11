@@ -77,7 +77,7 @@ This will create a virtual environment in this directory (you should see that so
 
 Next, activate the environment with
 ```
-> Scripts/activate.bat
+> Scripts\activate.bat
 ```
 You should see that your path has changed to:
 ```
